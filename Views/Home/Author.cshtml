@@ -1,0 +1,80 @@
+﻿<div>
+    <div class="form-horizontal">
+        <h2>Автор</h2>
+        <div class="form-group">
+            <label class="control-label col-md-2">Имя автора</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" type="text" id="authorName" />
+                <span class="field-validation-valid text-danger" data-valmsg-replace="true"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Фотография автора</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" type="file" id="inputFiles" />
+                @*<span class="field-validation-valid text-danger" data-valmsg-replace="true"></span>*@
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="createAuthor" value="Создать автора" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#createAuthor").click(function e)
+        {
+            
+        }
+        $("#submitLogin").click(function (e) {
+            e.preventDefault();
+            var loginData = {
+                grant_type: 'password',
+                username: $('#emailLogin').val(),
+                password: $('#passwordLogin').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Account/token',
+                data: loginData
+            }).success(function (data) {
+                $('.userName').text(data.username);
+                $('.userInfo').css('display', 'block');
+                $('.loginForm').css('display', 'none');
+                // сохраняем в хранилище sessionStorage токен доступа
+                sessionStorage.setItem(tokenKey, data.access_token);
+                console.log(data.access_token);
+                login(e);
+            }).fail(function (data) {
+                console.log(data);
+            });
+
+        });
+
+
+        function login(e)
+        {
+            var token;
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/Account/UserInfo',
+                    beforeSend: function (xhr) {
+
+                        token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                        xhr.setRequestHeader("Content-type", "application/json");
+                        console.log(xhr);
+                    },
+                    success: function (data) {
+                        var url = '@Url.Action("Create", "Article")';
+                        window.location = url;
+                    },
+                    fail: function (data) {
+                        console.log(data);
+                    }
+                });
+        }
+    </script>
+</div>

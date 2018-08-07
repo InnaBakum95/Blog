@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "Authorize";
+}
+@*@Html.Hidden("RedirectToArticle", Url.Action("Create", "Article"));*@
+<script>
+    var tokenKey = "accessToken";
+        token = sessionStorage.getItem(tokenKey);
+        if (token != null) {
+            var url = '@Url.Action("Create", "Article")';
+            window.location = url;
+        }
+</script>
+
+<div class="form-horizontal">
+    <h2>Authorize</h2>
+    <div class="form-group">
+            <label  class = "control-label col-md-2">Введите email</label>
+        <div class="col-md-10">
+            <input class="form-control text-box single-line" type="email" id="emailLogin" />
+            <span class="field-validation-valid text-danger" data-valmsg-replace="true"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class = "control-label col-md-2">Введите пароль</label>
+        <div class="col-md-10">
+            <input class="form-control text-box single-line" type="password" id="passwordLogin" />
+            <span class="field-validation-valid text-danger" data-valmsg-replace="true"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" id="submitLogin" value="Авторизация" class="btn btn-default" />
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script>
+       
+        $("#submitLogin").click(function (e) {
+            e.preventDefault();
+            var loginData = {
+                grant_type: 'password',
+                username: $('#emailLogin').val(),
+                password: $('#passwordLogin').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/Account/token',
+                data: loginData
+            }).success(function (data) {
+                $('.userName').text(data.username);
+                $('.userInfo').css('display', 'block');
+                $('.loginForm').css('display', 'none');
+                // сохраняем в хранилище sessionStorage токен доступа
+                sessionStorage.setItem(tokenKey, data.access_token);
+                console.log(data.access_token);
+                login(e);
+            }).fail(function (data) {
+                console.log(data);
+            });
+            
+        });
+
+
+        function login(e)
+        {
+            var token;
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/Account/UserInfo',
+                    beforeSend: function (xhr) {
+
+                        token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                        xhr.setRequestHeader("Content-type", "application/json");
+                        console.log(xhr);
+                    },
+                    success: function (data) {
+                        var url = '@Url.Action("Create", "Article")';
+                        window.location = url;
+                    },
+                    fail: function (data) {
+                        console.log(data);
+                    }
+                });
+        }
+
+            //beforeSend: function (xhr) {
+
+            //    var token = sessionStorage.getItem(tokenKey);
+            //    xhr.setRequestHeader("Authorization", "Bearer " + token);
+            //}
+
+            //$('#logOut').click(function (e) {
+            //    e.preventDefault();
+            //    $('.loginForm').css('display', 'block');
+            //    $('.userInfo').css('display', 'none');
+            //    sessionStorage.removeItem(tokenKey);
+            //});
+        //    $('#getDataByLogin').click(function (e) {
+
+        //});
+            //$('#getDataByRole').click(function (e) {
+            //    e.preventDefault();
+            //    $.ajax({
+            //        type: 'GET',
+            //        url: '/api/values/getrole',
+            //        beforeSend: function (xhr) {
+
+            //            var token = sessionStorage.getItem(tokenKey);
+            //            xhr.setRequestHeader("Authorization", "Bearer " + token);
+            //        },
+            //        success: function (data) {
+            //            alert(data);
+            //        },
+            //        fail: function (data) {
+            //            console.log(data);
+            //        }
+            //    });
+
+  </script>
+</div>

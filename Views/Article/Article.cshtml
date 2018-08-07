@@ -1,0 +1,159 @@
+﻿
+@model NewBlogAPI.Components.BlogArticleComponents.BlogArticle
+@{
+    ViewBag.Title = "Создание новой статьи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<p>
+    @Html.ActionLink("Create New", "CreateArticleBlog")
+
+</p>
+
+@using (Html.BeginForm("Create", "Article"))
+{
+    <div class="form-horizontal">
+        <h2>Создание новой статьи</h2>
+        @Html.HiddenFor(model => model.Id, htmlAttributes: new { @id = "ArticleID" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.NameOfArticle, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NameOfArticle, new { htmlAttributes = new { @class = "form-control", @id = "NameOfArticle" } })
+                @Html.ValidationMessageFor(model => model.NameOfArticle, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscriptionOfArticle, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-lg-8">
+                @Html.EditorFor(model => model.DiscriptionOfArticle, new { htmlAttributes = new { @class = "form-control", @id = "DiscriptionOfArticle" } })
+                @Html.ValidationMessageFor(model => model.DiscriptionOfArticle, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ArticleText, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ArticleText, new { htmlAttributes = new { @class = "form-control", @id = "ArticleText" } })
+                @Html.ValidationMessageFor(model => model.ArticleText, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Image, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Image, new { htmlAttributes = new { @class = "form-control" } })
+
+                @*@Html.<input type="file">(model => model.Image, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" id="Save" class="btn btn-default" />
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="file" data-ng-model="File" onchange="fileInputChanged(this)">
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script>
+            var tokenKey = "accessToken";
+            var token = sessionStorage.getItem(tokenKey);
+            $('#Save').click(function () {
+               
+                var body = {
+                    NameOfArticle: $('#NameOfArticle').val(),
+                    DiscriptionOfArticle: $('#DiscriptionOfArticle').val(),
+                    ArticleText: $('#ArticleText').val()
+                }
+                var headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+
+                var bodyJson = JSON.stringify(body);
+                
+                $.ajax({
+                    url: '/Api/BlogArticle/CreateArticle',
+                    method: 'POST',
+                    headers: headers,
+                    data: bodyJson,
+                    dataType: 'html',
+                    success: function (data) {
+                        alert("Data Loaded: " + data.);
+},
+                    fail: function (data) {
+                      
+                    }
+                });
+
+            }); 
+
+        @*function login(e)
+        {
+            var token;
+                e.preventDefault();
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/Account/UserInfo',
+                    beforeSend: function (xhr) {
+
+                        token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                        xhr.setRequestHeader("Content-type", "application/json");
+                        console.log(xhr);
+                    },
+                    success: function (data) {
+                        var url = '@Url.Action("Create", "Article")';
+                        window.location = url;
+                    },
+                    fail: function (data) {
+                        console.log(data);
+                    }
+                });
+            }*@
+
+            //fileInput
+
+        </script>
+    </div>
+}
+
+        @*<table class ="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.NameOfArticle)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DiscriptionOfArticle)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ArticleText)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Image)
+                </th>
+                <th></th>
+            </tr>
+            <</table>>*@
+
+
+
+
+@*<script>
+    fileInputChanged = function (element) {
+        console.log(element);
+        var formData = new FormData();
+
+        formData.append("File", element[0]);
+
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.open("POST", "http://localhost:50455/api/ArticleFiles?inArticleId=1", true);
+        httpRequest.send(formData);
+
+    }
+        <script>*@
+
